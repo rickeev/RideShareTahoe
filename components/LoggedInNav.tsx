@@ -4,7 +4,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useSearchParams, usePathname } from 'next/navigation';
 import { useState, useEffect, useMemo } from 'react';
-import logo from '@/public/icon.png';
 import { useUser } from '@/components/providers/SupabaseUserProvider';
 import config from '@/config';
 import dynamic from 'next/dynamic';
@@ -103,10 +102,9 @@ const LoggedInNav = () => {
             title={`${config.appName} home`}
           >
             <Image
-              src={logo}
+              src="/icon.png"
               alt={`${config.appName} logo`}
               className="w-6 sm:w-8"
-              placeholder="blur"
               priority={true}
               width={32}
               height={32}
@@ -193,10 +191,9 @@ const LoggedInNav = () => {
               href="/"
             >
               <Image
-                src={logo}
+                src="/icon.png"
                 alt={`${config.appName} logo`}
                 className="w-6 sm:w-8"
-                placeholder="blur"
                 priority={true}
                 width={32}
                 height={32}

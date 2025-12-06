@@ -8,9 +8,7 @@ import config from '@/config';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 interface MockImageProps {
-  src: {
-    src: string;
-  };
+  src: string | { src: string };
   alt: string;
   [key: string]: string | number | undefined | null | object | ReactNode;
 }
@@ -25,16 +23,6 @@ interface MockLinkProps extends AnchorHTMLAttributes<HTMLAnchorElement> {
 jest.mock('next/navigation', () => ({
   useSearchParams: jest.fn(),
   usePathname: jest.fn(),
-}));
-
-jest.mock('@/app/icon.png', () => ({
-  default: {
-    src: '/mock-icon.png',
-    height: 32,
-    width: 32,
-    blurDataURL:
-      'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==',
-  },
 }));
 
 jest.mock('@/components/providers/SupabaseUserProvider', () => ({
@@ -54,8 +42,9 @@ jest.mock(
   'next/image',
   () =>
     function Image({ src, alt, ...props }: MockImageProps) {
+      const imageSrc = typeof src === 'string' ? src : src.src;
       // eslint-disable-next-line @next/next/no-img-element
-      return <img src={src.src} alt={alt} {...props} />;
+      return <img src={imageSrc} alt={alt} {...props} />;
     }
 );
 
