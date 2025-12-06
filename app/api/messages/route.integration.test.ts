@@ -19,7 +19,7 @@ import { createClient } from '@supabase/supabase-js';
 // Test configuration
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'http://127.0.0.1:54321';
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
-const TEST_EMAIL_DOMAIN = '@ridetahoe-test.local';
+const TEST_EMAIL_DOMAIN = '@example.com';
 
 // Skip this test if not in integration test mode
 const isIntegrationTest = process.env.RUN_INTEGRATION_TESTS === 'true';
