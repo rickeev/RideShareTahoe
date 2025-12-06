@@ -47,6 +47,7 @@ jobs:
       - run: npm run typecheck
 
   integration-test:
+    environment: integration
     timeout-minutes: 15
     runs-on: ubuntu-latest
     needs: [test]
