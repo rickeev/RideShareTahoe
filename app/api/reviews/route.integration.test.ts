@@ -67,21 +67,23 @@ describeIntegration('Reviews API Integration Test', () => {
 
   it('should setup test users and ride', async () => {
     // 1. Create Driver
-    const { data: driverAuth, error: createError1 } = await supabaseAdmin.auth.admin.createUser({
-      email: driverEmail,
-      password: 'TestPassword123!',
-      email_confirm: true,
-    });
-    if (createError1) throw createError1;
+    const { data: driverAuth, error: createDriverError } =
+      await supabaseAdmin.auth.admin.createUser({
+        email: driverEmail,
+        password: 'TestPassword123!',
+        email_confirm: true,
+      });
+    if (createDriverError) throw createDriverError;
     driverId = driverAuth.user.id;
 
     // 2. Create Passenger
-    const { data: passengerAuth, error: createError2 } = await supabaseAdmin.auth.admin.createUser({
-      email: passengerEmail,
-      password: 'TestPassword123!',
-      email_confirm: true,
-    });
-    if (createError2) throw createError2;
+    const { data: passengerAuth, error: createPassengerError } =
+      await supabaseAdmin.auth.admin.createUser({
+        email: passengerEmail,
+        password: 'TestPassword123!',
+        email_confirm: true,
+      });
+    if (createPassengerError) throw createPassengerError;
     passengerId = passengerAuth.user.id;
 
     // Login as Driver to create Ride (RLS)
