@@ -67,20 +67,22 @@ describeIntegration('Reviews API Integration Test', () => {
 
   it('should setup test users and ride', async () => {
     // 1. Create Driver
-    const { data: driverAuth } = await supabaseAdmin.auth.admin.createUser({
+    const { data: driverAuth, error: createError1 } = await supabaseAdmin.auth.admin.createUser({
       email: driverEmail,
       password: 'TestPassword123!',
       email_confirm: true,
     });
-    driverId = driverAuth.user!.id;
+    if (createError1) throw createError1;
+    driverId = driverAuth.user.id;
 
     // 2. Create Passenger
-    const { data: passengerAuth } = await supabaseAdmin.auth.admin.createUser({
+    const { data: passengerAuth, error: createError2 } = await supabaseAdmin.auth.admin.createUser({
       email: passengerEmail,
       password: 'TestPassword123!',
       email_confirm: true,
     });
-    passengerId = passengerAuth.user!.id;
+    if (createError2) throw createError2;
+    passengerId = passengerAuth.user.id;
 
     // Login as Driver to create Ride (RLS)
     const { data: driverSession } = await supabaseAdmin.auth.signInWithPassword({
@@ -233,12 +235,13 @@ describeIntegration('Reviews API Integration Test', () => {
   it('should deny review from non-participant', async () => {
     // Create random user
     const randomEmail = `random-${Date.now()}${TEST_EMAIL_DOMAIN}`;
-    const { data: randomAuth } = await supabaseAdmin.auth.admin.createUser({
+    const { data: randomAuth, error: createError } = await supabaseAdmin.auth.admin.createUser({
       email: randomEmail,
       password: 'TestPassword123!',
       email_confirm: true,
     });
-    const randomId = randomAuth.user!.id;
+    if (createError) throw createError;
+    const randomId = randomAuth.user.id;
 
     // Login
     const { data: sessionData } = await supabaseAdmin.auth.signInWithPassword({
