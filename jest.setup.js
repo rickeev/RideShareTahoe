@@ -25,6 +25,23 @@ if (globalThis.window != undefined) {
   globalThis.globalThis.scrollTo = jest.fn();
 }
 
+if (process.env.RUN_INTEGRATION_TESTS === 'true') {
+  const requiredEnvVars = [
+    'NEXT_PUBLIC_SUPABASE_URL',
+    'NEXT_PUBLIC_SUPABASE_ANON_KEY',
+    'SUPABASE_SERVICE_ROLE_KEY',
+  ];
+  const missingEnvVars = requiredEnvVars.filter((key) => !process.env[key]);
+
+  if (missingEnvVars.length > 0) {
+    throw new Error(
+      `Missing integration test env vars: ${missingEnvVars.join(
+        ', '
+      )}. Add them to GitHub Actions Secrets or your .env.test.local file.`
+    );
+  }
+}
+
 process.env.RESEND_API_KEY = process.env.RESEND_API_KEY || 'DUMMY_RESEND_KEY';
 process.env.SUPABASE_URL = process.env.SUPABASE_URL || 'DUMMY_SUPABASE_URL';
 process.env.SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY || 'DUMMY_SERVICE_KEY';
