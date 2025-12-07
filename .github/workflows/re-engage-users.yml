@@ -1,4 +1,6 @@
 name: Re-engage Inactive Users
+permissions:
+  contents: read
 
 on:
   # DISABLED: Automated re-engagement emails to prevent spam
