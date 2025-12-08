@@ -42,6 +42,9 @@ export const useCommunityRides = (
   useEffect(() => {
     if (currentUser) {
       void fetchRidesData();
+    } else {
+      setMyRides([]);
+      setDataLoading(false);
     }
   }, [currentUser, fetchRidesData]);
 
