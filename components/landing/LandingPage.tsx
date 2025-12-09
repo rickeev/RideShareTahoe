@@ -22,22 +22,20 @@ export default function LandingPage() {
         summaryClassName="text-lg text-slate-600 max-w-3xl mx-auto"
         items={[
           {
-            icon: '🛡️',
-            title: 'Verified Profiles',
-            description:
-              'Trust is our currency. All members are verified with social profiles and community reviews.',
+            icon: '🤝',
+            title: 'Friendly Community',
+            description: 'Join carpools, make friends, and build your Tahoe crew.',
           },
           {
             icon: '💰',
-            title: 'Transparent Pricing',
-            description:
-              'Fair cost sharing. Drivers set the price, but we cap it to ensure it remains a cost-sharing community, not a taxi service.',
+            title: 'Shared Costs',
+            description: 'Gas isn’t cheap — but splitting it is.',
           },
           {
             icon: '🌱',
-            title: 'Eco-Friendly',
+            title: 'Lighter Footprint',
             description:
-              'Every shared ride takes a car off the road. Help protect the environment we all love.',
+              'Every shared ride means fewer cars, less traffic, and cleaner air for Tahoe.',
           },
         ]}
         cta={{
