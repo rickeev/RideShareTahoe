@@ -47,20 +47,23 @@ export default function LandingPage() {
         heading="Community Stories"
         stories={[
           {
-            quote: 'Be our first storyteller!!',
-            author: 'You',
+            quote:
+              'I moved to the Bay last year and didn’t know anyone who skied. My first RideShareTahoe trip turned into a crew.',
+            author: 'Maya (Berkeley → Palisades)',
           },
           {
-            quote: 'Be our second storyteller!',
-            author: 'You',
+            quote:
+              'I was tired of solo driving and paying to park. Sharing rides saved me money and I met two friends I now hike with in the summer.',
+            author: 'Chris (Oakland → Northstar)',
           },
           {
-            quote: 'Be our third storyteller!',
-            author: 'You',
+            quote:
+              "We wanted to ski more but don't have a car and the Sports Basement ski bus was pricey. This worked perfectly for us.",
+            author: 'Jen & Leo (SF → Heavenly)',
           },
         ]}
         cta={{
-          label: 'Read More Stories',
+          label: 'Our Story',
           onClick: () => router.push('/our-story'),
         }}
       />
