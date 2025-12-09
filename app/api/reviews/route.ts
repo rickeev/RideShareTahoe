@@ -1,4 +1,8 @@
-import { getAuthenticatedUser, createUnauthorizedResponse } from '@/libs/supabase/auth';
+import {
+  getAuthenticatedUser,
+  createUnauthorizedResponse,
+  ensureProfileComplete,
+} from '@/libs/supabase/auth';
 import { NextRequest, NextResponse } from 'next/server';
 
 /**
@@ -75,14 +79,13 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const { user, authError, supabase } = await getAuthenticatedUser(request);
+
     if (authError || !user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        {
-          status: 401,
-        }
-      );
+      return createUnauthorizedResponse(authError);
     }
+
+    const profileError = await ensureProfileComplete(supabase, user.id, 'leaving reviews');
+    if (profileError) return profileError;
 
     const { bookingId, rating, comment } = await request.json();
 
