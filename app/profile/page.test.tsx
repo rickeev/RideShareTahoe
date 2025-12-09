@@ -15,7 +15,6 @@ jest.mock('@/components/providers/SupabaseUserProvider', () => ({
 
 jest.mock('@/libs/utils', () => ({
   formatLocation: jest.fn((loc) => ({
-    neighborhood: loc.neighborhood,
     city: loc.city,
     state: loc.state,
   })),
@@ -146,7 +145,6 @@ describe('ProfilePage', () => {
       role: 'pet_owner',
       profile_photo_url: 'https://example.com/photo.png',
       bio: 'This is my bio.',
-      neighborhood: 'My Neighborhood',
       city: 'My City',
       state: 'TX',
       support_preferences: ['sick_recovering', 'other'],
@@ -185,7 +183,7 @@ describe('ProfilePage', () => {
     expect(screen.getByAltText('Profile')).toHaveAttribute('src', 'https://example.com/photo.png');
     expect(screen.getByText('This is my bio.')).toBeInTheDocument();
 
-    expect(screen.getByText('📍 My Neighborhood, My City, TX')).toBeInTheDocument();
+    expect(screen.getByText('📍 My City, TX')).toBeInTheDocument();
 
     expect(screen.getByRole('link', { name: '📘 Facebook' })).toHaveAttribute(
       'href',

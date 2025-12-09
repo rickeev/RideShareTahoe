@@ -43,7 +43,6 @@ export interface ProfileType {
   first_name: string | null;
   last_name: string | null;
   profile_photo_url: string | null;
-  neighborhood: string | null;
   city: string | null;
   state: string | null;
   bio: string | null;

@@ -25,7 +25,6 @@ interface ProfileFormState {
   profile_photo_url: string;
   role: string;
   street_address: string;
-  neighborhood: string;
   city: string;
   state: string;
   zip_code: string;
@@ -72,7 +71,6 @@ export default function ProfileForm({ initialData }: ProfileFormProps) {
     profile_photo_url: safeString(initialData.profile_photo_url),
     role: safeRole(initialData.role, 'driver'),
     street_address: safeString(initialData.street_address),
-    neighborhood: safeString(initialData.neighborhood),
     city: safeString(initialData.city),
     state: safeString(initialData.state),
     zip_code: safeString(initialData.zip_code),
@@ -152,7 +150,6 @@ export default function ProfileForm({ initialData }: ProfileFormProps) {
       profile_photo_url: formState.profile_photo_url || null,
       role: formState.role,
       street_address: formState.street_address.trim() || null,
-      neighborhood: formState.neighborhood.trim() || null,
       city: formState.city.trim() || null,
       state: formState.state.trim() || null,
       zip_code: formState.zip_code.trim() || null,
@@ -181,7 +178,7 @@ export default function ProfileForm({ initialData }: ProfileFormProps) {
       return;
     }
 
-    // Address Validation: Require everything except neighborhood
+    // Address Validation: Require full address
     if (
       !formState.street_address.trim() ||
       !formState.city.trim() ||
@@ -307,17 +304,6 @@ export default function ProfileForm({ initialData }: ProfileFormProps) {
             publicly.
           </p>
         </div>
-        <label className="space-y-2">
-          <span className="text-sm font-semibold text-gray-600 dark:text-slate-400">
-            Neighborhood
-          </span>
-          <input
-            name="neighborhood"
-            value={formState.neighborhood}
-            onChange={handleInputChange}
-            className="w-full rounded-xl border border-gray-200 dark:border-slate-600 dark:bg-slate-800 dark:text-white px-4 py-2 focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none"
-          />
-        </label>
         <label className="space-y-2">
           <span className="text-sm font-semibold text-gray-600 dark:text-slate-400">City</span>
           <input

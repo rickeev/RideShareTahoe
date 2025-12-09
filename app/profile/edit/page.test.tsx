@@ -43,7 +43,6 @@ const defaultProfile: UserProfile = {
   email: 'jane@example.com',
   avatar_url: '',
   role: 'driver',
-  neighborhood: 'Lakeview',
   city: 'Tahoe City',
   state: 'CA',
   bio: 'I love ridesharing together with neighbors.',

@@ -11,7 +11,6 @@ export interface Database {
           role: string | null;
           email: string | null;
           profile_photo_url: string | null;
-          neighborhood: string | null;
           city: string | null;
           state: string | null;
           phone_number: string | null;
@@ -34,7 +33,6 @@ export interface Database {
           role?: string | null;
           email?: string | null;
           profile_photo_url?: string | null;
-          neighborhood?: string | null;
           city?: string | null;
           state?: string | null;
           phone_number?: string | null;
@@ -57,7 +55,6 @@ export interface Database {
           role?: string | null;
           email?: string | null;
           profile_photo_url?: string | null;
-          neighborhood?: string | null;
           city?: string | null;
           state?: string | null;
           phone_number?: string | null;

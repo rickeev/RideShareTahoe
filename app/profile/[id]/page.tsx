@@ -19,7 +19,6 @@ interface Profile {
   profile_photo_url?: string;
   city?: string;
   state?: string;
-  neighborhood?: string;
   bio?: string;
   role: 'driver' | 'passenger' | 'both';
   support_preferences?: string[];
@@ -262,20 +261,18 @@ export default function PublicProfilePage() {
               </div>
 
               {/* Location */}
-              {(profile.neighborhood || profile.city) && (
+              {profile.city && (
                 <div className="flex items-center justify-center sm:justify-start text-gray-600 dark:text-gray-400 mb-4">
                   <span className="mr-2">📍</span>
                   <span>
                     {(() => {
                       const formattedLocation = formatLocation({
-                        neighborhood: profile.neighborhood,
                         city: profile.city,
                         state: profile.state,
                       });
                       if (!formattedLocation) return null;
                       return (
                         <>
-                          {formattedLocation.neighborhood && `${formattedLocation.neighborhood}, `}
                           {formattedLocation.city}
                           {formattedLocation.state && `, ${formattedLocation.state}`}
                         </>

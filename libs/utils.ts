@@ -11,7 +11,6 @@ type ClassValue = string | undefined | null | false;
  * All fields are optional and can be null.
  */
 interface LocationFields {
-  neighborhood?: string | null;
   city?: string | null;
   state?: string | null;
 }
@@ -150,7 +149,6 @@ export function formatLocation(
 
   // capitalizeLocation is built to handle null/undefined values.
   return {
-    neighborhood: capitalizeLocation(location.neighborhood),
     city: capitalizeLocation(location.city),
     state: capitalizeLocation(location.state),
   };

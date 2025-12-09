@@ -16,7 +16,6 @@ interface ProfileEntity {
   profile_photo_url?: string | null;
   bio?: string | null;
   role: string;
-  neighborhood?: string | null;
   city?: string | null;
   state?: string | null;
 
@@ -120,12 +119,11 @@ export default function ProfilePage() {
     }
 
     const location = formatLocation({
-      neighborhood: profile.neighborhood,
       city: profile.city,
       state: profile.state,
     });
 
-    const pieces = [location?.neighborhood, location?.city, location?.state].filter(Boolean);
+    const pieces = [location?.city, location?.state].filter(Boolean);
     return pieces.length ? `📍 ${pieces.join(', ')}` : null;
   }, [profile]);
 
