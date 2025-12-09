@@ -158,6 +158,7 @@ export interface Vehicle {
   year: number;
   color: string;
   license_plate?: string;
+  drivetrain?: 'FWD' | 'RWD' | 'AWD' | '4WD';
   created_at?: string;
   updated_at?: string;
 }

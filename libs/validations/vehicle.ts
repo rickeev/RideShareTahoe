@@ -30,6 +30,7 @@ export const vehicleSchema = z.object({
     )
     .optional()
     .or(z.literal('')),
+  drivetrain: z.enum(['FWD', 'RWD', 'AWD', '4WD']),
 });
 
 export type VehicleSchema = z.infer<typeof vehicleSchema>;

@@ -251,6 +251,52 @@ export interface Database {
           },
         ];
       };
+      vehicles: {
+        Row: {
+          id: string;
+          owner_id: string;
+          make: string;
+          model: string;
+          year: number;
+          color: string;
+          license_plate: string | null;
+          created_at: string;
+          updated_at: string;
+          drivetrain: string | null;
+        };
+        Insert: {
+          id?: string;
+          owner_id: string;
+          make: string;
+          model: string;
+          year: number;
+          color: string;
+          license_plate?: string | null;
+          created_at?: string;
+          updated_at?: string;
+          drivetrain?: string | null;
+        };
+        Update: {
+          id?: string;
+          owner_id?: string;
+          make?: string;
+          model?: string;
+          year?: number;
+          color?: string;
+          license_plate?: string | null;
+          created_at?: string;
+          updated_at?: string;
+          drivetrain?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'vehicles_owner_id_fkey';
+            columns: ['owner_id'];
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
     };
     Views: {
       // eslint-disable-next-line no-unused-vars
