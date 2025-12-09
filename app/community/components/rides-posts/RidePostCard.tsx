@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState } from 'react';
@@ -7,6 +8,7 @@ import type { RidePostType, ProfileType } from '@/app/community/types';
 import TripBookingModal from '@/components/trips/TripBookingModal';
 import { RidePostActions } from './RidePostActions';
 import { useHasActiveBooking } from '@/hooks/useHasActiveBooking';
+import { useUserProfile } from '@/hooks/useProfile';
 
 interface RidePostCardProps {
   post: RidePostType;
@@ -86,6 +88,22 @@ export function RidePostCard({
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const isOwner = currentUserId === post.poster_id;
   const { hasBooking } = useHasActiveBooking(currentUserId, post.owner?.id);
+  const { data: profile } = useUserProfile();
+  const router = useRouter();
+
+  const handleRestrictedAction = (action: () => void) => {
+    if (!profile?.first_name) {
+      if (
+        confirm(
+          'You need to complete your profile before you can send requests. Would you like to do that now?'
+        )
+      ) {
+        router.push('/complete-profile');
+      }
+      return;
+    }
+    action();
+  };
 
   const cardBackground = 'bg-white dark:bg-slate-900';
   const { styles: badgeStyles, label: badgeLabel } = getBadgeConfig(post.posting_type);
@@ -237,10 +255,10 @@ export function RidePostCard({
         <RidePostActions
           post={post}
           isOwner={isOwner}
-          onMessage={onMessage}
+          onMessage={(recipient, post) => handleRestrictedAction(() => onMessage(recipient, post))}
           onDelete={onDelete}
           deleting={deleting}
-          onOpenBooking={() => setIsBookingOpen(true)}
+          onOpenBooking={() => handleRestrictedAction(() => setIsBookingOpen(true))}
           showBookingButton={!!showBookingButton}
           hasActiveBooking={hasBooking}
         />
