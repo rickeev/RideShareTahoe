@@ -70,7 +70,8 @@ jobs:
 
       - name: Set Environment Variables
         run: |
-          supabase status -o json > supabase-status.json 2>/dev/null
+          supabase status -o json > supabase-status.json
+          cat supabase-status.json
           echo "NEXT_PUBLIC_SUPABASE_URL=$(jq -r .api_url supabase-status.json)" >> $GITHUB_ENV
           echo "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=$(jq -r .anon_key supabase-status.json)" >> $GITHUB_ENV
           echo "SUPABASE_SERVICE_ROLE_KEY=$(jq -r .service_role_key supabase-status.json)" >> $GITHUB_ENV

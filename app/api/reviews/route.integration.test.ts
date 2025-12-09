@@ -32,8 +32,25 @@ const SUPABASE_URL =
   process.env.NEXT_PUBLIC_SUPABASE_URL.trim() !== ''
     ? process.env.NEXT_PUBLIC_SUPABASE_URL
     : 'http://127.0.0.1:54321';
-const SUPABASE_PUBLISHABLE_KEY = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || '';
-const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+const SUPABASE_PUBLISHABLE_KEY =
+  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY &&
+  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY !== 'undefined' &&
+  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY !== 'null'
+    ? process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+    : 'test-anon-key';
+
+const SUPABASE_SERVICE_ROLE_KEY =
+  process.env.SUPABASE_SERVICE_ROLE_KEY &&
+  process.env.SUPABASE_SERVICE_ROLE_KEY !== 'undefined' &&
+  process.env.SUPABASE_SERVICE_ROLE_KEY !== 'null'
+    ? process.env.SUPABASE_SERVICE_ROLE_KEY
+    : process.env.SUPABASE_SERVICE_KEY || '';
+
+if (!SUPABASE_SERVICE_ROLE_KEY) {
+  console.warn(
+    'WARNING: SUPABASE_SERVICE_ROLE_KEY is missing. Integration tests requiring admin access will fail.'
+  );
+}
 const TEST_EMAIL_DOMAIN = '@example.com';
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 
@@ -56,6 +73,9 @@ describeIntegration('Reviews API Integration Test', () => {
   let rideId: string;
   let bookingId: string;
   beforeAll(async () => {
+    if (!SUPABASE_SERVICE_ROLE_KEY) {
+      throw new Error('SUPABASE_SERVICE_ROLE_KEY is missing. Cannot run integration tests.');
+    }
     supabaseAdmin = createSupabaseClient<Database>(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
       auth: {
         autoRefreshToken: false,
