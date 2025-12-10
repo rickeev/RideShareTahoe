@@ -31,6 +31,7 @@ interface ProfilesQueryRow {
   state: string | null;
   bio: string | null;
   role: string | null;
+  pronouns: string | null;
   profile_socials: ProfileSocialsRow | null;
 }
 
@@ -88,6 +89,7 @@ export const fetchProfiles = async (
       state,
       bio,
       role,
+      pronouns,
       profile_socials (
         facebook_url,
         instagram_url,
@@ -133,6 +135,7 @@ export const fetchProfiles = async (
     state: profile.state,
     bio: profile.bio,
     role: profile.role,
+    pronouns: profile.pronouns || null,
     // Flatten social URLs
     facebook_url: profile.profile_socials?.facebook_url || null,
     instagram_url: profile.profile_socials?.instagram_url || null,

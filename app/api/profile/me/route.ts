@@ -21,6 +21,7 @@ interface ProfileRow {
   city?: string | null;
   state?: string | null;
   bio?: string | null;
+  pronouns?: string | null;
 }
 
 interface ProfileResponse {

@@ -154,6 +154,26 @@ export function formatLocation(
   };
 }
 
+/**
+ * Normalizes pronoun strings (e.g., "he/him") for display.
+ *
+ * @param value - The raw pronoun value stored in the database.
+ * @returns The capitalized pronoun string, or the original falsy value.
+ */
+export function formatPronouns(value: string | null | undefined): string | null | undefined {
+  if (!value) {
+    return value;
+  }
+
+  const segments = value
+    .split('/')
+    .map((segment) => segment.trim())
+    .filter(Boolean)
+    .map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1));
+
+  return segments.length > 0 ? segments.join('/') : value;
+}
+
 // #endregion
 
 // #region Location Privacy

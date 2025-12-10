@@ -47,6 +47,7 @@ export interface ProfileType {
   state: string | null;
   bio: string | null;
   role: string | null;
+  pronouns?: string | null;
   community_support_badge: string | null;
   support_preferences: string[] | null;
   support_story: string | null;

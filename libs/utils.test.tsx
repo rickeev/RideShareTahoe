@@ -1,4 +1,4 @@
-import { cn, capitalizeLocation, formatLocation } from './utils';
+import { cn, capitalizeLocation, formatLocation, formatPronouns } from './utils';
 
 // --- cn (Class Names) ---
 describe('cn', () => {
@@ -93,5 +93,21 @@ describe('formatLocation', () => {
   it('should return null or undefined if passed as input', () => {
     expect(formatLocation(null)).toBe(null);
     expect(formatLocation(undefined)).toBe(undefined);
+  });
+});
+
+describe('formatPronouns', () => {
+  it('should capitalize slash-separated pronouns', () => {
+    expect(formatPronouns('he/him')).toBe('He/Him');
+    expect(formatPronouns('they/them')).toBe('They/Them');
+  });
+
+  it('should normalize sentence-style values', () => {
+    expect(formatPronouns('prefer not to answer')).toBe('Prefer not to answer');
+  });
+
+  it('should return falsy inputs unchanged', () => {
+    expect(formatPronouns(null)).toBe(null);
+    expect(formatPronouns(undefined)).toBe(undefined);
   });
 });

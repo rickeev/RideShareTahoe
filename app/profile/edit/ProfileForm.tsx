@@ -12,6 +12,13 @@ const ROLE_OPTIONS = [
   { value: 'both', label: 'Driver & Passenger' },
 ];
 
+const PRONOUN_OPTIONS = [
+  { value: 'he/him', label: 'He/Him' },
+  { value: 'she/her', label: 'She/Her' },
+  { value: 'they/them', label: 'They/Them' },
+  { value: 'prefer not to answer', label: 'Prefer not to answer' },
+];
+
 const SOCIAL_FIELDS = [
   { key: 'facebook_url', label: 'Facebook' },
   { key: 'instagram_url', label: 'Instagram' },
@@ -24,6 +31,7 @@ interface ProfileFormState {
   last_name: string;
   profile_photo_url: string;
   role: string;
+  pronouns: string;
   street_address: string;
   city: string;
   state: string;
@@ -70,6 +78,7 @@ export default function ProfileForm({ initialData }: ProfileFormProps) {
     last_name: safeString(initialData.last_name),
     profile_photo_url: safeString(initialData.profile_photo_url),
     role: safeRole(initialData.role, 'driver'),
+    pronouns: safeString(initialData.pronouns),
     street_address: safeString(initialData.street_address),
     city: safeString(initialData.city),
     state: safeString(initialData.state),
@@ -149,6 +158,7 @@ export default function ProfileForm({ initialData }: ProfileFormProps) {
       last_name: formState.last_name.trim() || null,
       profile_photo_url: formState.profile_photo_url || null,
       role: formState.role,
+      pronouns: formState.pronouns || null,
       street_address: formState.street_address.trim() || null,
       city: formState.city.trim() || null,
       state: formState.state.trim() || null,
@@ -280,6 +290,26 @@ export default function ProfileForm({ initialData }: ProfileFormProps) {
             className="w-full rounded-xl border border-gray-200 dark:border-slate-600 dark:bg-slate-800 dark:text-white px-3 py-2 focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none"
           >
             {ROLE_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="space-y-2">
+          <span className="text-sm font-semibold text-gray-600 dark:text-slate-400">
+            Pronouns <span className="text-xs font-normal text-gray-500"> (optional)</span>
+          </span>
+          <select
+            name="pronouns"
+            value={formState.pronouns}
+            onChange={handleInputChange}
+            className="w-full rounded-xl border border-gray-200 dark:border-slate-600 dark:bg-slate-800 dark:text-white px-3 py-2 focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none"
+          >
+            <option value="" disabled>
+              Select pronouns (optional)
+            </option>
+            {PRONOUN_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.label}
               </option>
