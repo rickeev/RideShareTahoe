@@ -66,28 +66,8 @@ jobs:
       - name: Start Local Supabase and Set Environment Variables
         id: supabase_env_setup
         run: |
-          # Capture start output (human readable table) to file
-          # We use 2>&1 to ensure we capture all output, and tee to see it in logs
-          supabase start -x studio,realtime,logflare,imgproxy 2>&1 | tee supabase.log
+          supabase start 2>&1 | tee supabase.log
 
-          # Strip ANSI colors to make parsing robust
-          sed -i 's/\x1b\[[0-9;]*m//g' supabase.log
-
-          # Parse credentials directly from the clean log using regex
-          # Matches: "API URL: http://..." and "anon key: ey..."
-          API_URL=$(grep -i "api url" supabase.log | grep -oE 'http://[^ ]+')
-          ANON_KEY=$(grep -i "anon key" supabase.log | grep -oE 'ey[a-zA-Z0-9._-]+')
-          SERVICE_KEY=$(grep -i "service_role key" supabase.log | grep -oE 'ey[a-zA-Z0-9._-]+')
-
-          echo "Detected API URL: $API_URL"
-
-          # Export to GITHUB_ENV
-          echo "NEXT_PUBLIC_SUPABASE_URL=$API_URL" >> $GITHUB_ENV
-          echo "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=$ANON_KEY" >> $GITHUB_ENV
-          echo "SUPABASE_SERVICE_ROLE_KEY=$SERVICE_KEY" >> $GITHUB_ENV
-
-      - name: Wait for Supabase services
-        run: |
           MAX_ATTEMPTS=20
           SLEEP_TIME=3
           ATTEMPT=0
@@ -104,6 +84,34 @@ jobs:
           fi
 
           supabase status
+
+          SUPABASE_ENV_FILE="supabase.status.env"
+          supabase status -o env > "$SUPABASE_ENV_FILE"
+
+          extract_env_value() {
+            local line
+            line=$(grep -im1 "$1" "$SUPABASE_ENV_FILE" || true)
+            if [ -z "$line" ]; then
+              return
+            fi
+            echo "$line" | sed -E 's/^[^:=]*[:=]\s*"?([^"\r\n]+)"?.*/\1/' | tr -d '\r'
+          }
+
+          API_URL=$(extract_env_value "SUPABASE_URL")
+          if [ -z "$API_URL" ]; then
+            API_URL=$(extract_env_value "API_URL")
+          fi
+          ANON_KEY=$(extract_env_value "PUBLISHABLE_KEY")
+          SERVICE_KEY=$(extract_env_value "SERVICE_ROLE_KEY")
+
+          if [ -z "$API_URL" ] || [ -z "$ANON_KEY" ] || [ -z "$SERVICE_KEY" ]; then
+            echo "Error: Failed to extract Supabase environment variables."
+            exit 1
+          fi
+
+          echo "NEXT_PUBLIC_SUPABASE_URL=$API_URL" >> $GITHUB_ENV
+          echo "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=$ANON_KEY" >> $GITHUB_ENV
+          echo "SUPABASE_SERVICE_ROLE_KEY=$SERVICE_KEY" >> $GITHUB_ENV
 
       - name: Verify Mapped Application Environment Variables
         run: |
