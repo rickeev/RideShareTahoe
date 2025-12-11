@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react';
 import {
   fetchMyDriverTrips,
@@ -22,35 +22,27 @@ export default function MyTripsView({ user, supabase, onMessage }: Readonly<MyTr
   const [driverTrips, setDriverTrips] = useState<TripBooking[]>([]);
   const [passengerTrips, setPassengerTrips] = useState<TripBooking[]>([]);
   const [loading, setLoading] = useState(true);
+  const [bookingActionLoadingIds, setBookingActionLoadingIds] = useState<string[]>([]);
+
+  const loadTrips = useCallback(async () => {
+    setLoading(true);
+    try {
+      const [dt, pt] = await Promise.all([
+        fetchMyDriverTrips(supabase, user.id),
+        fetchMyPassengerTrips(supabase, user.id),
+      ]);
+      setDriverTrips(dt);
+      setPassengerTrips(pt);
+    } catch (error) {
+      console.error('Error loading trips:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [supabase, user.id]);
 
   useEffect(() => {
-    let mounted = true;
-    const loadTrips = async () => {
-      setLoading(true);
-      try {
-        const [dt, pt] = await Promise.all([
-          fetchMyDriverTrips(supabase, user.id),
-          fetchMyPassengerTrips(supabase, user.id),
-        ]);
-        if (mounted) {
-          setDriverTrips(dt);
-          setPassengerTrips(pt);
-        }
-      } catch (error) {
-        console.error('Error loading trips:', error);
-      } finally {
-        if (mounted) setLoading(false);
-      }
-    };
-
-    if (user?.id) {
-      loadTrips();
-    }
-
-    return () => {
-      mounted = false;
-    };
-  }, [supabase, user?.id]);
+    loadTrips();
+  }, [loadTrips]);
 
   const handleUpdateBooking = async (bookingId: string, newStatus: TripBooking['status']) => {
     try {
@@ -69,6 +61,34 @@ export default function MyTripsView({ user, supabase, onMessage }: Readonly<MyTr
       throw error; // Let the child component handle the toast/alert if needed, or handle here
     }
   };
+
+  const handleCancelBookingRequest = useCallback(
+    async (bookingId: string) => {
+      setBookingActionLoadingIds((prev) =>
+        prev.includes(bookingId) ? prev : [...prev, bookingId]
+      );
+
+      try {
+        const response = await fetch(`/api/trips/bookings/${bookingId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'cancel' }),
+        });
+
+        const payload = await response.json();
+        if (!response.ok) {
+          throw new Error(payload.error || 'Unable to cancel booking request');
+        }
+
+        await loadTrips();
+      } catch (error) {
+        console.error('Error cancelling booking request:', error);
+      } finally {
+        setBookingActionLoadingIds((prev) => prev.filter((id) => id !== bookingId));
+      }
+    },
+    [loadTrips]
+  );
 
   if (loading) {
     return (
@@ -114,6 +134,8 @@ export default function MyTripsView({ user, supabase, onMessage }: Readonly<MyTr
               role="driver"
               onUpdateStatus={handleUpdateBooking}
               onMessage={onMessage}
+              bookingActionLoadingIds={bookingActionLoadingIds}
+              onCancelRequest={handleCancelBookingRequest}
             />
           </TabPanel>
           <TabPanel>
@@ -122,6 +144,8 @@ export default function MyTripsView({ user, supabase, onMessage }: Readonly<MyTr
               role="passenger"
               onUpdateStatus={handleUpdateBooking}
               onMessage={onMessage}
+              bookingActionLoadingIds={bookingActionLoadingIds}
+              onCancelRequest={handleCancelBookingRequest}
             />
           </TabPanel>
         </TabPanels>

@@ -9,6 +9,9 @@ interface TripBookingsListProps {
   readonly onUpdateStatus: (_bookingId: string, _status: TripBooking['status']) => Promise<void>;
   // eslint-disable-next-line no-unused-vars
   readonly onMessage: (_recipient: ProfileType, _ride: RidePostType | null) => void;
+  readonly bookingActionLoadingIds: string[];
+  // eslint-disable-next-line no-unused-vars
+  readonly onCancelRequest: (_bookingId: string) => Promise<void>;
 }
 
 export default function TripBookingsList({
@@ -16,6 +19,8 @@ export default function TripBookingsList({
   role,
   onUpdateStatus,
   onMessage,
+  bookingActionLoadingIds,
+  onCancelRequest,
 }: TripBookingsListProps) {
   if (bookings.length === 0) {
     return (
@@ -44,6 +49,8 @@ export default function TripBookingsList({
           role={role}
           onUpdateStatus={onUpdateStatus}
           onMessage={onMessage}
+          onCancelRequest={onCancelRequest}
+          isCancelling={bookingActionLoadingIds.includes(booking.id)}
         />
       ))}
     </div>

@@ -8,6 +8,9 @@ interface TripBookingCardProps {
   onUpdateStatus: (bookingId: string, status: TripBooking['status']) => Promise<void>;
   // eslint-disable-next-line no-unused-vars
   onMessage: (recipient: ProfileType, ride: RidePostType) => void;
+  // eslint-disable-next-line no-unused-vars
+  onCancelRequest?: (bookingId: string) => Promise<void>;
+  readonly isCancelling?: boolean;
 }
 
 export default function TripBookingCard({
@@ -15,6 +18,8 @@ export default function TripBookingCard({
   role,
   onUpdateStatus,
   onMessage,
+  onCancelRequest,
+  isCancelling,
 }: Readonly<TripBookingCardProps>) {
   const isDriver = role === 'driver';
   const otherPerson = isDriver ? booking.passenger : booking.driver;
@@ -108,6 +113,17 @@ export default function TripBookingCard({
             >
               Message
             </button>
+
+            {!isDriver && booking.status === 'pending' && onCancelRequest && (
+              <button
+                type="button"
+                onClick={() => void onCancelRequest(booking.id)}
+                disabled={isCancelling}
+                className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-70 disabled:cursor-not-allowed"
+              >
+                {isCancelling ? 'Cancelling…' : 'Cancel request'}
+              </button>
+            )}
 
             {/* Driver Actions for Pending Requests */}
             {isDriver && booking.status === 'pending' && (

@@ -56,22 +56,35 @@ export default function InviteToRideModal({
   const handleInvite = async () => {
     if (!selectedRideId) return;
 
+    const selectedRide = myRides.find((r) => r.id === selectedRideId);
+    if (!selectedRide) return;
+
     setInviting(true);
     try {
-      const selectedRide = myRides.find((r) => r.id === selectedRideId);
-      if (!selectedRide) return;
+      const pickupTime = new Date(
+        `${selectedRide.departure_date}T${selectedRide.departure_time}`
+      ).toISOString();
 
-      const { error } = await supabase.from('trip_bookings').insert({
-        ride_id: selectedRideId,
-        driver_id: user.id,
-        passenger_id: passengerId,
-        pickup_location: selectedRide.start_location, // Default to ride start? Or maybe let driver specify?
-        pickup_time: `${selectedRide.departure_date}T${selectedRide.departure_time}`, // Default to ride time
-        status: 'invited',
-        driver_notes: 'I saw your post and would like to offer you a ride!',
+      const response = await fetch('/api/trips/invitations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ride_id: selectedRideId,
+          passenger_id: passengerId,
+          pickup_location: selectedRide.start_location,
+          pickup_time: pickupTime,
+          driver_notes: 'I saw your post and would like to offer you a ride!',
+        }),
       });
 
-      if (error) throw error;
+      const data = await response.json();
+
+      if (!response.ok) {
+        const errorMessage = Array.isArray(data.error)
+          ? data.error[0]?.message || 'Unable to send invitation'
+          : data.error || 'Unable to send invitation';
+        throw new Error(errorMessage);
+      }
 
       toast.success(`Invited ${passengerName} to ride!`);
       onClose();

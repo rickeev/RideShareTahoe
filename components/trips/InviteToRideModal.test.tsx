@@ -51,6 +51,10 @@ describe('InviteToRideModal', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    (globalThis.fetch as jest.Mock) = jest.fn().mockResolvedValue({
+      ok: true,
+      json: jest.fn().mockResolvedValue({}),
+    });
     (fetchMyRides as jest.Mock).mockResolvedValue(mockRides);
   });
 

@@ -346,9 +346,7 @@ const PhotoUpload = React.memo(
               </button>
             )}
 
-            <p className="text-xs text-gray-500 mt-1">
-              Upload a profile photo (will be compressed to 100KB)
-            </p>
+            <p className="text-xs text-gray-500 mt-1">Upload a profile photo</p>
           </div>
         </div>
 

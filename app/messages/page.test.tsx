@@ -10,6 +10,17 @@ jest.mock('@/hooks/useProtectedRoute', () => ({
   useProtectedRoute: jest.fn(),
 }));
 
+jest.mock('@/libs/validation', () => ({
+  validateUUID: jest.fn((uuid: string, fieldName: string) => {
+    // Mock implementation that validates UUIDs like the real function
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(uuid)) {
+      throw new Error(`${fieldName} must be a valid UUID`);
+    }
+    return true;
+  }),
+}));
+
 jest.mock('@/libs/supabase', () => ({
   supabase: {
     from: jest.fn(() => ({
@@ -66,7 +77,7 @@ describe('MessagesPage', () => {
 
     // Default to an authenticated user, as this is the component's primary state
     mockedUseProtectedRoute.mockReturnValue({
-      user: { id: 'default-user' },
+      user: { id: '00000000-0000-4000-8000-000000000099' },
       isLoading: false,
     });
   });
@@ -95,7 +106,7 @@ describe('MessagesPage', () => {
   it('shows "No conversations yet" when logged in but fetch returns empty', async () => {
     // Set up the specific user for this test
     mockedUseProtectedRoute.mockReturnValue({
-      user: { id: 'user-123' },
+      user: { id: '00000000-0000-4000-8000-000000000003' },
       isLoading: false,
     });
 
@@ -116,20 +127,20 @@ describe('MessagesPage', () => {
   });
 
   it('fetches and displays conversations, then loads messages for the first one', async () => {
-    const mockUser = { id: 'user-123', email: 'user@test.com' };
+    const mockUser = { id: '00000000-0000-4000-8000-000000000001', email: 'user@test.com' };
     const mockConversations = [
       {
         id: 'convo-1',
-        participant1_id: 'user-123',
-        participant2_id: 'user-456',
+        participant1_id: '00000000-0000-4000-8000-000000000001',
+        participant2_id: '00000000-0000-4000-8000-000000000002',
         participant1: {
-          id: 'user-123',
+          id: '00000000-0000-4000-8000-000000000001',
           first_name: 'Test',
           last_name: 'User',
           profile_photo_url: 'test.png',
         },
         participant2: {
-          id: 'user-456',
+          id: '00000000-0000-4000-8000-000000000002',
           first_name: 'Jane',
           last_name: 'Doe',
           profile_photo_url: 'jane.png',
@@ -147,17 +158,31 @@ describe('MessagesPage', () => {
     const mockMessages = [
       {
         id: 'msg-1',
-        sender_id: 'user-456',
-        recipient_id: 'user-123',
+        sender_id: '00000000-0000-4000-8000-000000000002',
+        recipient_id: '00000000-0000-4000-8000-000000000001',
         content: 'Hello there!',
         created_at: '2023-10-27T10:00:00Z',
       },
       {
         id: 'msg-2',
-        sender_id: 'user-123',
-        recipient_id: 'user-456',
+        sender_id: '00000000-0000-4000-8000-000000000001',
+        recipient_id: '00000000-0000-4000-8000-000000000002',
         content: 'Hi!',
         created_at: '2023-10-27T10:01:00Z',
+      },
+    ];
+
+    const mockBookingRequests = [
+      {
+        id: 'booking-1',
+        ride_id: 'ride-1',
+        driver_id: mockUser.id,
+        passenger_id: '00000000-0000-4000-8000-000000000002',
+        status: 'pending',
+        pickup_location: 'Downtown',
+        pickup_time: '2025-12-01T10:00:00Z',
+        driver: { first_name: 'Test', last_name: 'User' },
+        passenger: { first_name: 'Jane', last_name: 'Doe' },
       },
     ];
 
@@ -178,6 +203,13 @@ describe('MessagesPage', () => {
     const msgOr = jest.fn().mockReturnValue({ eq: msgEq });
     const msgSelect = jest.fn().mockReturnValue({ or: msgOr });
 
+    const bookingOrder = jest.fn().mockResolvedValue({ data: mockBookingRequests, error: null });
+    const bookingEq = jest.fn().mockReturnValue({ order: bookingOrder });
+    const bookingIs = jest.fn().mockReturnValue({ order: bookingOrder });
+    const bookingIn = jest.fn().mockReturnValue({ eq: bookingEq, is: bookingIs });
+    const bookingOr = jest.fn().mockReturnValue({ in: bookingIn });
+    const bookingSelect = jest.fn().mockReturnValue({ or: bookingOr });
+
     mockedFrom.mockImplementation((tableName: string) => {
       if (tableName === 'conversations') {
         return { select: convoSelect, update: jest.fn(() => createUpdateChain()) };
@@ -185,10 +217,17 @@ describe('MessagesPage', () => {
       if (tableName === 'messages') {
         return { select: msgSelect, update: jest.fn(() => createUpdateChain()) };
       }
+      if (tableName === 'trip_bookings') {
+        return { select: bookingSelect };
+      }
       return { select: jest.fn(), update: jest.fn(() => createUpdateChain()) };
     });
 
     render(<MessagesPage />);
+
+    await waitFor(() => {
+      expect(bookingOrder).toHaveBeenCalled();
+    });
 
     // --- 1. Check Sidebar ---
     const sidebar = screen.getByRole('heading', { name: /conversations/i }).closest('aside');
@@ -203,19 +242,31 @@ describe('MessagesPage', () => {
     });
 
     // --- 2. Check Main Thread ---
-    // Wait for the message input to appear, confirming a conversation is selected
+    // Wait for the message input to appear, confirming a conversation is selected and messaging is enabled
+    await waitFor(() => {
+      expect(screen.getByPlaceholderText(/type your message/i)).toBeInTheDocument();
+    });
+
     const mainContent = screen.getByPlaceholderText(/type your message/i).closest('section');
     expect(mainContent).toBeInTheDocument();
 
     await waitFor(() => {
-      if (mainContent) {
-        // Check header
-        expect(within(mainContent).getByRole('heading', { name: 'Jane Doe' })).toBeInTheDocument();
-        // Check messages
-        expect(within(mainContent).getByText('Hello there!')).toBeInTheDocument();
-        expect(within(mainContent).getByText('Hi!')).toBeInTheDocument();
+      if (!mainContent) {
+        throw new Error('Main content should be rendered');
       }
+      // Check header
+      expect(within(mainContent).getByRole('heading', { name: 'Jane Doe' })).toBeInTheDocument();
+      // Check messages
+      expect(within(mainContent).getByText('Hello there!')).toBeInTheDocument();
+      expect(within(mainContent).getByText('Hi!')).toBeInTheDocument();
     });
+
+    expect(screen.getByText(/1 request/)).toBeInTheDocument();
+    if (mainContent) {
+      expect(within(mainContent).getByText(/Jane Doe\s*•/i)).toBeInTheDocument();
+    }
+    expect(screen.getByText(/pending/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Approve/i })).toBeInTheDocument();
 
     // --- 3. Check Message Styling ---
     // Find *your* message

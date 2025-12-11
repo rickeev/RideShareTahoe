@@ -142,7 +142,7 @@ export default function MessageModal({
                   <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
                     To: {recipient?.first_name ?? 'Guest'}
                   </p>
-                  <p className="text-xs uppercase tracking-[0.3em] text-gray-400">
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
                     {ridePost ? `Re: Ride post ${ridePost.id}` : 'General Message'}
                   </p>
                 </div>
