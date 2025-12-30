@@ -36,9 +36,10 @@ export default function HeroSection() {
           </div>
 
           {/* SEO anchor headline (single H1 on homepage) */}
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black leading-tight tracking-tight font-display text-white drop-shadow-xl">
-            Carpool to Lake Tahoe — Free, Community-Run
-          </h1>
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-semibold leading-tight tracking-tight font-display text-white/95 drop-shadow-lg">
+  Carpool to Lake Tahoe — Free to use, Community-Run
+</h1>
+
 
           {/* Brand vibe headline */}
           <h2 className="text-5xl sm:text-6xl md:text-7xl font-black leading-tight tracking-tight font-display drop-shadow-xl">
@@ -48,7 +49,7 @@ export default function HeroSection() {
           </h2>
 
           <p className="text-xl md:text-2xl text-slate-200 max-w-3xl mx-auto leading-relaxed font-light drop-shadow-md">
-            Find or post rides between the Bay Area and Tahoe. Split gas, cut traffic, and meet
+            Find or post rides between the Bay Area, Reno, and Tahoe. Split gas, cut traffic, and meet
             mountain friends — with carpools heading to Palisades, Northstar, Heavenly, Kirkwood,
             and more.
           </p>
