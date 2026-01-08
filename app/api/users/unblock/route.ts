@@ -37,8 +37,9 @@ export async function POST(request: NextRequest) {
       throw deleteError;
     }
 
+    // Return 200 for idempotency - unblock succeeds whether or not block existed
     if (!deletedRows || deletedRows.length === 0) {
-      return NextResponse.json({ error: 'Block not found' }, { status: 404 });
+      return NextResponse.json({ success: true, message: 'User was not blocked' }, { status: 200 });
     }
 
     return NextResponse.json({ success: true, message: 'User unblocked' }, { status: 200 });

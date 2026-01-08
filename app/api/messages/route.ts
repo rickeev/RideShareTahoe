@@ -61,17 +61,21 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid ride_post_id format' }, { status: 400 });
     }
 
-    // Validate content
-    const trimmedContent = content.trim();
-    if (!trimmedContent) {
-      return NextResponse.json({ error: 'Message content cannot be empty' }, { status: 400 });
+    // Validate content - check raw length first to prevent DoS with large payloads
+    if (typeof content !== 'string') {
+      return NextResponse.json({ error: 'Message content must be a string' }, { status: 400 });
     }
 
-    if (trimmedContent.length > MAX_MESSAGE_LENGTH) {
+    if (content.length > MAX_MESSAGE_LENGTH) {
       return NextResponse.json(
         { error: `Message content cannot exceed ${MAX_MESSAGE_LENGTH} characters` },
         { status: 400 }
       );
+    }
+
+    const trimmedContent = content.trim();
+    if (!trimmedContent) {
+      return NextResponse.json({ error: 'Message content cannot be empty' }, { status: 400 });
     }
 
     // Find existing conversation
