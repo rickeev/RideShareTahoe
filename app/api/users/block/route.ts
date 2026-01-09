@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAuthenticatedUser, createUnauthorizedResponse } from '@/libs/supabase/auth';
+import { checkSupabaseRateLimit } from '@/libs/rateLimit';
 import { isValidUUID } from '@/libs/validation';
 
 /**
  * Block another user. Creates a two-way mirror block preventing messaging and profile viewing.
+ * Rate limited to 10 block actions per hour per user.
  * POST /api/users/block
  * Body: { blocked_id: UUID }
  */
@@ -13,6 +15,25 @@ export async function POST(request: NextRequest) {
 
     if (authError || !user) {
       return createUnauthorizedResponse(authError);
+    }
+
+    // Rate limit: 10 block actions per hour per user
+    const rateLimitCheck = await checkSupabaseRateLimit(supabase, user.id, 'user-block', {
+      maxRequests: 10,
+      windowSeconds: 3600,
+      message: 'Too many block actions. Please try again later.',
+    });
+
+    if (!rateLimitCheck.success) {
+      return NextResponse.json(
+        { error: rateLimitCheck.error?.message || 'Rate limit exceeded' },
+        {
+          status: 429,
+          headers: {
+            'Retry-After': String(rateLimitCheck.error?.retryAfter || 3600),
+          },
+        }
+      );
     }
 
     const { blocked_id } = await request.json();

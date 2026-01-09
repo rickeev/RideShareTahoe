@@ -7,6 +7,10 @@ jest.mock('@/libs/supabase/auth', () => ({
   createUnauthorizedResponse: jest.fn(),
 }));
 
+jest.mock('@/libs/rateLimit', () => ({
+  checkSupabaseRateLimit: jest.fn().mockResolvedValue({ success: true }),
+}));
+
 describe('POST /api/users/block', () => {
   beforeEach(() => jest.clearAllMocks());
 
