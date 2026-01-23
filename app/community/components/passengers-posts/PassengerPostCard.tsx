@@ -3,10 +3,6 @@ import Image from 'next/image';
 import { useState } from 'react';
 import type { RidePostType, ProfileType } from '@/app/community/types';
 import InviteToRideModal from '@/components/trips/InviteToRideModal';
-import { useProfileCompletionPrompt } from '@/hooks/useProfileCompletionPrompt';
-import { useUserProfile } from '@/hooks/useProfile';
-import { formatDateLabel, formatTimeLabel } from '@/lib/dateFormat';
-import { sanitizeLocation } from '@/libs/sanitize/location';
 
 interface PassengerPostCardProps {
   post: RidePostType;
@@ -16,55 +12,24 @@ interface PassengerPostCardProps {
   // eslint-disable-next-line no-unused-vars
   onDelete?: (id: string) => void;
   deleting?: boolean;
-  onViewDetails: () => void;
 }
 
 /**
  * Displays ride metadata and action buttons for a single passenger post.
  */
-
 export function PassengerPostCard({
   post,
   currentUserId,
   onMessage,
   onDelete,
   deleting,
-  onViewDetails,
 }: Readonly<PassengerPostCardProps>) {
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
 
   const isOwner = currentUserId === post.poster_id;
-<<<<<<< HEAD
-=======
 
-  // Clarified naming: this is relationship-level, NOT trip-level
-  const { hasBooking: hasAnyActiveBookingWithUser } = useHasActiveBooking(
-    currentUserId,
-    post.owner?.id
-  );
->>>>>>> a510e1a (refactor: integrate multi-date series into community pages and forms)
-
-  const sanitizedStartLocation = sanitizeLocation(post.start_location);
-  const sanitizedEndLocation = sanitizeLocation(post.end_location);
   const badgeStyles = 'bg-green-100 text-green-800';
   const badgeLabel = '👋 Passenger';
-  const departureDateLabel = formatDateLabel(post.departure_date);
-  const departureTimeLabel = formatTimeLabel(post.departure_time);
-  const returnDateLabel = formatDateLabel(post.return_date);
-
-  const { data: profile } = useUserProfile();
-  const { showProfileCompletionPrompt, profileCompletionModal } = useProfileCompletionPrompt({
-    toastMessage: 'Please finish your profile before contacting other riders.',
-    closeRedirect: null,
-  });
-
-  const handleRestrictedAction = (action: () => void) => {
-    if (!profile?.first_name) {
-      showProfileCompletionPrompt();
-      return;
-    }
-    action();
-  };
 
   let directionLabel = '';
   const isCombinedRoundTrip = post.is_round_trip && post.return_date;
@@ -109,9 +74,10 @@ export function PassengerPostCard({
               </span>
             )}
             <span className="text-xs text-gray-500 dark:text-gray-400">
-              {departureDateLabel ?? 'Date TBD'}
-              {departureTimeLabel && ` · ${departureTimeLabel}`}
-              {isCombinedRoundTrip && returnDateLabel && ` - ${returnDateLabel}`}
+              {new Date(post.departure_date).toLocaleDateString()}
+              {isCombinedRoundTrip &&
+                post.return_date &&
+                ` - ${new Date(post.return_date).toLocaleDateString()}`}
             </span>
           </div>
         </div>
@@ -133,30 +99,15 @@ export function PassengerPostCard({
       <div className="mb-4 grow">
         <div className="flex items-center text-sm text-gray-700 dark:text-gray-300 mb-2">
           <span className="font-medium w-12 text-gray-500 dark:text-gray-400">From:</span>
-          <span className="truncate flex-1">{sanitizedStartLocation}</span>
+          <span className="truncate flex-1">{post.start_location}</span>
         </div>
         <div className="flex items-center text-sm text-gray-700 dark:text-gray-300">
           <span className="font-medium w-12 text-gray-500 dark:text-gray-400">To:</span>
-          <span className="truncate flex-1">{sanitizedEndLocation}</span>
+          <span className="truncate flex-1">{post.end_location}</span>
         </div>
       </div>
 
-<<<<<<< HEAD
-      {/*Details button*/}
-      <div>
-        <button
-          onClick={onViewDetails}
-          className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
-          aria-label={`View full ride details for trip from ${post.start_location} to ${post.end_location}`}
-        >
-          View Details &rarr;
-        </button>
-      </div>
-
-      {/* Owner Info (if not owner) */}
-=======
       {/* Owner Info */}
->>>>>>> a510e1a (refactor: integrate multi-date series into community pages and forms)
       {!isOwner && post.owner && (
         <div className="flex items-center space-x-3 mb-4 pt-4 border-t border-gray-100 dark:border-slate-800">
           <Link href={`/profile/${post.owner.id}`} className="shrink-0">
@@ -182,13 +133,6 @@ export function PassengerPostCard({
               </p>
             </Link>
           </div>
-        </div>
-      )}
-
-      {/* Relationship context (UX improvement) */}
-      {!isOwner && hasAnyActiveBookingWithUser && (
-        <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">
-          You already have active trips together.
         </div>
       )}
 
@@ -226,32 +170,15 @@ export function PassengerPostCard({
         ) : (
           post.owner && (
             <>
-<<<<<<< HEAD
               <button
-                onClick={() =>
-                  handleRestrictedAction(() => post.owner && onMessage(post.owner, post))
-                }
+                onClick={() => onMessage(post.owner!, post)}
                 className="bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-gray-200 px-3 py-2 rounded-lg text-sm hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors flex-1"
               >
                 Message
               </button>
 
               <button
-                onClick={() => handleRestrictedAction(() => setIsInviteModalOpen(true))}
-=======
-              {/* Message button only shows when there's an active booking relationship */}
-              {hasAnyActiveBookingWithUser && (
-                <button
-                  onClick={() => onMessage(post.owner!, post)}
-                  className="bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-gray-200 px-3 py-2 rounded-lg text-sm hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors flex-1"
-                >
-                  Message
-                </button>
-              )}
-
-              <button
                 onClick={handleInviteClick}
->>>>>>> a510e1a (refactor: integrate multi-date series into community pages and forms)
                 className="bg-indigo-600 text-white px-3 py-2 rounded-lg text-sm hover:bg-indigo-700 transition-colors flex-1"
               >
                 Invite
@@ -270,8 +197,6 @@ export function PassengerPostCard({
           user={{ id: currentUserId }}
         />
       )}
-
-      {profileCompletionModal}
     </div>
   );
 }

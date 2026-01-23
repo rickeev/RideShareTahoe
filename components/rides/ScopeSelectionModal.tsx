@@ -34,7 +34,7 @@ interface VariantConfig {
   confirmButtonRing: string;
   confirmText: string;
   loadingText: string;
-  // eslint-disable-next-line no-unused-vars
+  /* eslint-disable no-unused-vars */
   getInfoText: (
     scope: ScopeType,
     futureCount: number,

@@ -1,10 +1,3 @@
-<<<<<<< HEAD
-import { useMemo, useState } from 'react';
-import Link from 'next/link';
-import { RidePostCard } from '@/app/community/components/rides-posts/RidePostCard';
-import type { RidePostType, ProfileType } from '../types';
-import PostDetailModal from '@/app/community/components/PostDetailModal';
-=======
 'use client';
 
 import React, { useMemo, useState } from 'react';
@@ -15,7 +8,6 @@ import { formatDateLong, formatDateMedium, formatTime12Hour } from '@/libs/dateT
 import ScopeSelectionModal, { ScopeType } from '@/components/rides/ScopeSelectionModal';
 import SeriesViewModal from '@/components/rides/SeriesViewModal';
 import type { RidePostType } from '../types';
->>>>>>> a510e1a (refactor: integrate multi-date series into community pages and forms)
 
 interface MyRidesTabProps {
   myRides: RidePostType[];
@@ -41,15 +33,7 @@ export function MyPostsTab({
   onDeleteWithScope,
   onRefresh,
 }: Readonly<MyRidesTabProps>) {
-<<<<<<< HEAD
-  const [selectedPost, setSelectedPost] = useState<RidePostType | null>(null);
-  // Group round trips together
-  const groupedRides = useMemo(() => {
-    const groups: { [key: string]: RidePostType[] } = {};
-    const standalone: RidePostType[] = [];
-=======
   const router = useRouter();
->>>>>>> a510e1a (refactor: integrate multi-date series into community pages and forms)
 
   // Modal states
   const [deleteModalRide, setDeleteModalRide] = useState<RidePostType | null>(null);
@@ -415,24 +399,8 @@ export function MyPostsTab({
 
       {displayRides.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-<<<<<<< HEAD
-          {groupedRides.map((post) => (
-            <RidePostCard
-              key={post.id}
-              post={post}
-              currentUserId={user.id}
-              onMessage={openMessageModal}
-              onDelete={deletePost}
-              deleting={deletingPost === post.id}
-              onViewDetails={() => {
-                setSelectedPost(null);
-                setTimeout(() => setSelectedPost(post), 0);
-              }}
-            />
-=======
           {displayRides.map((ride) => (
             <RideCard key={ride.id} ride={ride} />
->>>>>>> a510e1a (refactor: integrate multi-date series into community pages and forms)
           ))}
         </div>
       ) : (
@@ -452,20 +420,6 @@ export function MyPostsTab({
           </Link>
         </div>
       )}
-<<<<<<< HEAD
-      {selectedPost && (
-        <PostDetailModal
-          isOpen={!!selectedPost}
-          onClose={() => setSelectedPost(null)}
-          post={selectedPost}
-          currentUserId={user?.id ?? ''}
-          onMessage={openMessageModal}
-          onDelete={async (postId) => {
-            await deletePost(postId);
-            setSelectedPost(null);
-          }}
-          deleting={deletingPost === selectedPost.id}
-=======
 
       {/* Delete Scope Modal */}
       {deleteModalRide && (
@@ -498,7 +452,6 @@ export function MyPostsTab({
           isOpen={!!seriesViewRide}
           onClose={() => setSeriesViewRide(null)}
           rides={getSeriesRides(seriesViewRide)}
->>>>>>> a510e1a (refactor: integrate multi-date series into community pages and forms)
         />
       )}
     </div>
