@@ -5,25 +5,46 @@ import {
 } from './rideGrouping';
 import type { RidePostType } from '@/app/community/types';
 
-// Helper to create mock rides
-const createMockRide = (overrides: Partial<RidePostType> = {}): RidePostType => ({
-  id: 'ride-1',
-  poster_id: 'user-1',
-  title: 'Test Ride',
-  start_location: 'San Francisco',
-  end_location: 'Lake Tahoe',
-  departure_date: '2025-06-15',
-  departure_time: '08:00:00',
-  posting_type: 'driver',
-  status: 'active',
-  total_seats: 4,
-  available_seats: 3,
-  price_per_seat: 25,
-  is_round_trip: false,
-  has_awd: false,
-  created_at: '2025-01-01T00:00:00Z',
-  ...overrides,
-});
+// Helper to create mock rides with all required properties
+const createMockRide = (overrides: Partial<RidePostType> = {}): RidePostType => {
+  const base: RidePostType = {
+    id: 'ride-1',
+    poster_id: 'user-1',
+    title: 'Test Ride',
+    start_location: 'San Francisco',
+    end_location: 'Lake Tahoe',
+    start_lat: null,
+    start_lng: null,
+    end_lat: null,
+    end_lng: null,
+    departure_date: '2025-06-15',
+    departure_time: '08:00:00',
+    posting_type: 'driver',
+    is_round_trip: false,
+    trip_direction: null,
+    round_trip_group_id: null,
+    is_recurring: false,
+    recurring_days: null,
+    pricing_type: null,
+    price_per_seat: 25,
+    gas_estimate: null,
+    total_seats: 4,
+    available_seats: 3,
+    car_type: null,
+    has_awd: false,
+    driving_arrangement: null,
+    music_preference: null,
+    conversation_preference: null,
+    description: null,
+    special_instructions: null,
+    status: 'active',
+    created_at: '2025-01-01T00:00:00Z',
+    owner: null,
+    return_date: null,
+    return_time: null,
+  };
+  return { ...base, ...overrides };
+};
 
 describe('filterDepartureLegs', () => {
   it('returns rides with no trip_direction (standalone rides)', () => {
